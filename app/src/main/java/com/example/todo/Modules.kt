@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.todo.data.db.AppDatabase
 import com.example.todo.data.repository.TaskRepository
-import com.example.todo.ui.screen.MainViewModel
+import com.example.todo.ui.screen.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -18,7 +18,7 @@ private val dbModule = module {
     single {
         Room.databaseBuilder(
             androidContext().applicationContext, AppDatabase::class.java, DB_NAME
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     single { get<AppDatabase>().taskDao() }

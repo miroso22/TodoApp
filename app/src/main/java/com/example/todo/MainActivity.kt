@@ -6,7 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.content.ContextCompat
 import com.example.todo.notification.NotificationService
-import com.example.todo.ui.screen.MainScreen
+import com.example.todo.ui.screen.main.MainScreen
 import com.example.todo.ui.theme.TodoTheme
 
 class MainActivity : ComponentActivity() {

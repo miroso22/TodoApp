@@ -30,7 +30,8 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.text.Text
 import com.example.todo.data.model.Task
-import com.example.todo.ui.screen.MainViewModel
+import com.example.todo.data.model.TaskState
+import com.example.todo.ui.screen.main.MainViewModel
 import com.example.todo.widget.popup.PopupActivity
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +43,7 @@ fun TodoWidget(glanceId: GlanceId, viewModel: MainViewModel) {
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.tasks.onEach { TodoAppWidget().update(context, glanceId) }.launchIn(this)
+        viewModel.incompleteTasks.onEach { TodoAppWidget().update(context, glanceId) }.launchIn(this)
     }
 
     TodoWidgetContent(
@@ -75,7 +76,7 @@ private fun TaskItem(task: Task, onCheck: () -> Unit, modifier: GlanceModifier =
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CheckBox(checked = task.isDone, onCheckedChange = { onCheck() })
+        CheckBox(checked = task.state == TaskState.Completed, onCheckedChange = { onCheck() })
         Text(text = task.description)
     }
 }

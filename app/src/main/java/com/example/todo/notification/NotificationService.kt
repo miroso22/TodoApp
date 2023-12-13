@@ -42,7 +42,7 @@ class NotificationService : Service() {
 
     @SuppressLint("MissingPermission")
     private fun observeTasks() {
-        taskRepository.observeLastTasks().onEach { tasks ->
+        taskRepository.getLastTasks().onEach { tasks ->
             val notification = createNotification(tasks)
             if (hasPermission(Manifest.permission.POST_NOTIFICATIONS))
                 NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
