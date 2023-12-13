@@ -11,6 +11,7 @@ import java.util.UUID
 class MainViewModel(private val taskRepository: TaskRepository) : ViewModel() {
 
     val tasks = taskRepository.getTasks().stateIn(this)
+    val lastTasks = taskRepository.observeLastTasks().stateIn(this)
 
     fun addTask(description: String) = viewModelScope.launch {
         taskRepository.addTask(description)

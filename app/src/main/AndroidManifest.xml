@@ -28,6 +28,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".widget.popup.PopupActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleTask">
+
+        </activity>
+
         <receiver
             android:name=".widget.TodoWidgetReceiver"
             android:exported="true">
