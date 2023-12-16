@@ -4,20 +4,16 @@ import com.example.todo.data.db.TaskDao
 import com.example.todo.data.model.Task
 import com.example.todo.data.model.TaskState
 import com.example.todo.notification.NotificationService.Companion.NOTIFICATION_TASK_LIMIT
-import java.time.Instant
-import java.util.Calendar
-import java.util.TimeZone
+import com.example.todo.util.DateFormatter
 import java.util.UUID
-import kotlin.time.Duration.Companion.milliseconds
 
 class TaskRepository(private val taskDao: TaskDao) {
 
-    fun getIncompleteTasks() = taskDao.getTasks(TaskState.Incomplete)
-    fun getCompletedTasks() = taskDao.getTasks(TaskState.Completed)
-    fun getFailedTasks() = taskDao.getTasks(TaskState.Failed)
+    fun getTasks(date: Long, state: TaskState = TaskState.Incomplete) =
+        taskDao.getTasks(DateFormatter.millisToString(date), state)
 
-    suspend fun addTask(description: String) {
-        val date = getStartDayMillis()
+    suspend fun addTask(description: String, scheduledTime: Long?) {
+        val date = scheduledTime?.let { DateFormatter.millisToString(it) }
         taskDao.addTask(Task(description = description, timeToDo = date))
     }
 
@@ -29,14 +25,4 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun setTaskState(id: UUID, state: TaskState) = taskDao.setState(id, state)
 
     fun getLastTasks() = taskDao.getLastNTasks(NOTIFICATION_TASK_LIMIT)
-
-    private fun getStartDayMillis(millis: Long = System.currentTimeMillis()): Long {
-        val calendar = Calendar.getInstance(TimeZone.getDefault())
-        calendar.timeInMillis = millis
-        calendar[Calendar.HOUR_OF_DAY] = 0
-        calendar[Calendar.MINUTE] = 0
-        calendar[Calendar.SECOND] = 0
-        calendar[Calendar.MILLISECOND] = 0
-        return calendar.timeInMillis
-    }
 }

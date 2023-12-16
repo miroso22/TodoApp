@@ -25,19 +25,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todo.ui.screen.addTask.schedule.TaskScheduleSection
+import com.example.todo.ui.screen.addTask.schedule.TaskSchedule
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskSheet(show: MutableState<Boolean>, onAddTask: (String) -> Unit) {
+fun AddTaskSheet(
+    show: MutableState<Boolean>,
+    onAddTask: (String, TaskSchedule) -> Unit
+) {
     if (!show.value) return
     ModalBottomSheet(onDismissRequest = { show.value = false }) {
-        AddTaskSheetContent(onAddTask = { onAddTask(it); show.value = false })
+        AddTaskSheetContent(
+            onAddTask = { text, schedule -> onAddTask(text, schedule); show.value = false }
+        )
     }
 }
 
 @Composable
 private fun AddTaskSheetContent(
-    onAddTask: (String) -> Unit,
+    onAddTask: (String, TaskSchedule) -> Unit,
     modifier: Modifier = Modifier
 ) = Column(
     modifier = modifier
@@ -46,6 +53,7 @@ private fun AddTaskSheetContent(
 ) {
     var newTaskText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val taskSchedule = remember { mutableStateOf(TaskSchedule()) }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
@@ -57,8 +65,14 @@ private fun AddTaskSheetContent(
         value = newTaskText,
         label = { Text(text = "What do you need to do?") },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onAddTask(newTaskText) }),
+        keyboardActions = KeyboardActions(onDone = { onAddTask(newTaskText, taskSchedule.value) }),
         onValueChange = { newTaskText = it }
+    )
+
+
+    TaskScheduleSection(
+        modifier = Modifier.padding(top = 12.dp),
+        scheduleState = taskSchedule
     )
 
     Button(
@@ -66,7 +80,7 @@ private fun AddTaskSheetContent(
             .fillMaxWidth()
             .padding(top = 24.dp, bottom = 36.dp),
         enabled = newTaskText.isNotBlank(),
-        onClick = { onAddTask(newTaskText) }
+        onClick = { onAddTask(newTaskText, taskSchedule.value) }
     ) {
         Text(text = "Add")
     }
@@ -75,5 +89,5 @@ private fun AddTaskSheetContent(
 @Preview
 @Composable
 private fun AddTaskSheetPreview() {
-    AddTaskSheetContent(modifier = Modifier.background(Color.White), onAddTask = {})
+    AddTaskSheetContent(modifier = Modifier.background(Color.White), onAddTask = { _, _ -> })
 }

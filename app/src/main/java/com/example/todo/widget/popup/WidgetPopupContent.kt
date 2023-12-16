@@ -17,12 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todo.ui.screen.addTask.schedule.TaskSchedule
 import com.example.todo.ui.screen.main.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun WidgetPopup(viewModel: MainViewModel = koinViewModel()) {
-    WidgetPopupContent(onCreateTask = viewModel::addTask)
+    WidgetPopupContent(onCreateTask = { viewModel.addTask(it, TaskSchedule()) })
 }
 
 @Composable

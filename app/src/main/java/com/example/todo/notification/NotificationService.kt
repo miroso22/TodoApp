@@ -59,7 +59,7 @@ class NotificationService : Service() {
 
         scope.launch {
             if (doneTaskId != null) taskRepository.setDone(UUID.fromString(doneTaskId), isDone = true)
-            if (newTaskDescription != null) taskRepository.addTask(newTaskDescription)
+            if (newTaskDescription != null) taskRepository.addTask(newTaskDescription, null)
         }
         return true
     }

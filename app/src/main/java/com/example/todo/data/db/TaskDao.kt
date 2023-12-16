@@ -11,8 +11,8 @@ import java.util.UUID
 @Dao
 interface TaskDao {
 
-    @Query("SELECT * FROM tasks WHERE state = :state")
-    fun getTasks(state: TaskState = TaskState.Incomplete): Flow<List<Task>>
+    @Query("SELECT * FROM tasks WHERE timeToDo = :date AND state = :state")
+    fun getTasks(date: String, state: TaskState = TaskState.Incomplete): Flow<List<Task>>
 
     @Insert
     suspend fun addTask(task: Task)

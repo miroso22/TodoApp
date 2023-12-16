@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.core.content.ContextCompat
 import com.example.todo.notification.NotificationService
 import com.example.todo.ui.screen.main.MainScreen
+import com.example.todo.ui.screen.main.MainViewModel
 import com.example.todo.ui.theme.TodoTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -21,7 +23,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TodoTheme {
-                MainScreen()
+                MainScreen(handler = koinViewModel<MainViewModel>())
             }
         }
     }

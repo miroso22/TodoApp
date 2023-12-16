@@ -9,5 +9,5 @@ data class Task(
     val description: String,
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     val state: TaskState = TaskState.Incomplete,
-    val timeToDo: Long? = null
+    val timeToDo: String? = null
 )

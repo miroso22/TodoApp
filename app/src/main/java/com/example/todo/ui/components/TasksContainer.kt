@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.example.todo.data.model.Task
 import com.example.todo.ui.theme.Gray
 import com.example.todo.ui.theme.GraySemiTransparent
-import com.example.todo.ui.theme.TodoTheme
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
