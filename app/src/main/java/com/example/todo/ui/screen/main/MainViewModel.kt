@@ -10,8 +10,8 @@ import com.example.todo.ui.screen.addTask.schedule.scheduledTime
 import com.example.todo.util.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.UUID
@@ -19,17 +19,28 @@ import java.util.UUID
 class MainViewModel(private val taskRepository: TaskRepository) : ViewModel(), MainScreenHandler {
 
     private val dayOffset = MutableStateFlow(0)
-    private val currentDate = dayOffset.map { offset ->
-        getCalendarForOffset(offset)
-    }.stateIn(this, getCalendarForOffset(0))
 
-    val incompleteTasks = getTasksForDay(TaskState.Incomplete).stateIn(this)
-    private val completedTasks = getTasksForDay(TaskState.Completed)
-    private val failedTasks = getTasksForDay(TaskState.Failed)
+    override val screenState = dayOffset.flatMapLatest { todayOffset ->
+        val tomorrowOffset = todayOffset + 1
+        val yesterdayOffset = todayOffset - 1
+        val taskFlows = listOf(todayOffset, tomorrowOffset, yesterdayOffset).map { offset ->
+            val calendar = getCalendarForOffset(offset)
+            taskRepository.getTasksForDate(calendar.timeInMillis)
+        }
+        combine(taskFlows) { (today, tomorrow, yesterday) ->
+            val tasks = mapOf(
+                todayOffset to today.groupBy { it.state },
+                tomorrowOffset to tomorrow.groupBy { it.state },
+                yesterdayOffset to yesterday.groupBy { it.state }
+            )
+            MainScreenState(tasks, getCalendarForOffset(todayOffset))
+        }.debounce(200)
+    }.stateIn(this, MainScreenState())
 
-    override val screenState = combine(
-        incompleteTasks, completedTasks, failedTasks, currentDate, ::MainScreenState
-    ).stateIn(this, MainScreenState())
+    val incompleteTasks = dayOffset.flatMapLatest { offset ->
+        val calendar = getCalendarForOffset(offset)
+        taskRepository.getTasks(calendar.timeInMillis, TaskState.Incomplete)
+    }.stateIn(this)
 
     val lastTasks = taskRepository.getLastTasks().stateIn(this)
 
@@ -56,7 +67,4 @@ class MainViewModel(private val taskRepository: TaskRepository) : ViewModel(), M
 
     private fun getCalendarForOffset(offset: Int) = Calendar.getInstance()
         .apply { add(Calendar.DAY_OF_YEAR, offset) }
-
-    private fun getTasksForDay(state: TaskState) =
-        currentDate.flatMapLatest { taskRepository.getTasks(it.timeInMillis, state) }
 }

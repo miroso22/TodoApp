@@ -14,6 +14,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE timeToDo = :date AND state = :state")
     fun getTasks(date: String, state: TaskState = TaskState.Incomplete): Flow<List<Task>>
 
+    @Query("SELECT * FROM tasks WHERE timeToDo = :date")
+    fun getTasksForDay(date: String): Flow<List<Task>>
+
     @Insert
     suspend fun addTask(task: Task)
 

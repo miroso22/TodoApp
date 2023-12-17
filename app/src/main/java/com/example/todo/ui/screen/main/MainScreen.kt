@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todo.R
 import com.example.todo.data.model.Task
+import com.example.todo.data.model.TaskState
 import com.example.todo.ui.components.TasksContainer
 import com.example.todo.ui.screen.addTask.AddTaskSheet
 import com.example.todo.ui.theme.TodoTheme
@@ -103,11 +104,13 @@ fun MainScreen(handler: MainScreenHandler) {
             state = pagerState,
             beyondBoundsPageCount = 1,
             verticalAlignment = Alignment.Top
-        ) {
+        ) { page ->
+            val dayOffset = page - Int.MAX_VALUE / 2
+            val tasks = state.tasks[dayOffset].orEmpty()
             Column {
                 TasksContainer(
                     sectionName = "Incomplete",
-                    tasks = state.incompleteTasks,
+                    tasks = tasks[TaskState.Incomplete].orEmpty(),
                     onMarkTaskDone = handler::markTaskDone,
                     onDeleteTask = handler::cancelTask,
                     initiallyExpanded = true
@@ -116,7 +119,7 @@ fun MainScreen(handler: MainScreenHandler) {
                 TasksContainer(
                     modifier = Modifier.padding(top = 16.dp),
                     sectionName = "Completed",
-                    tasks = state.completedTasks,
+                    tasks = tasks[TaskState.Completed].orEmpty(),
                     onMarkTaskDone = handler::markTaskDone,
                     onDeleteTask = handler::deleteTask
                 )
@@ -124,7 +127,7 @@ fun MainScreen(handler: MainScreenHandler) {
                 TasksContainer(
                     modifier = Modifier.padding(top = 16.dp),
                     sectionName = "Failed",
-                    tasks = state.failedTasks,
+                    tasks = tasks[TaskState.Failed].orEmpty(),
                     onMarkTaskDone = {},
                     onDeleteTask = handler::deleteTask
                 )
@@ -150,12 +153,13 @@ fun MainScreen(handler: MainScreenHandler) {
 @Composable
 private fun MainScreenPreview() {
     val tasks = listOf(
-        Task(description = "Task 1"),
-        Task(description = "Task 2")
+        Task(description = "Task 1", state = TaskState.Incomplete),
+        Task(description = "Task 2", state = TaskState.Incomplete)
     )
+    val state = MainScreenState(tasks = mapOf(0 to tasks.groupBy { it.state }))
     TodoTheme {
         MainScreen(
-            handler = MainScreenHandler.apply { screenState.value = MainScreenState(incompleteTasks = tasks) }
+            handler = MainScreenHandler.apply { screenState.value = state }
         )
     }
 }

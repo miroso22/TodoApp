@@ -1,6 +1,7 @@
 package com.example.todo.ui.screen.main
 
 import com.example.todo.data.model.Task
+import com.example.todo.data.model.TaskState
 import com.example.todo.ui.screen.addTask.schedule.TaskSchedule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,10 +9,8 @@ import java.util.Calendar
 import java.util.UUID
 
 data class MainScreenState(
-    val incompleteTasks: List<Task> = listOf(),
-    val completedTasks: List<Task> = listOf(),
-    val failedTasks: List<Task> = listOf(),
-    val date: Calendar = Calendar.getInstance()
+    val tasks: Map<Int, Map<TaskState, List<Task>>> = mapOf(),
+    val date: Calendar = Calendar.getInstance(),
 )
 
 interface MainScreenHandler {

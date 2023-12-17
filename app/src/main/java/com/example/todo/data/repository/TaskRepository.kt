@@ -12,6 +12,9 @@ class TaskRepository(private val taskDao: TaskDao) {
     fun getTasks(date: Long, state: TaskState = TaskState.Incomplete) =
         taskDao.getTasks(DateFormatter.millisToString(date), state)
 
+    fun getTasksForDate(date: Long) =
+        taskDao.getTasksForDay(DateFormatter.millisToString(date))
+
     suspend fun addTask(description: String, scheduledTime: Long?) {
         val date = scheduledTime?.let { DateFormatter.millisToString(it) }
         taskDao.addTask(Task(description = description, timeToDo = date))
