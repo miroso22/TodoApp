@@ -2,18 +2,20 @@ package com.example.todo.ui.screen.addTask
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,40 +24,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todo.LocalNavigator
+import com.example.todo.R
 import com.example.todo.ui.screen.addTask.schedule.TaskScheduleSection
-import com.example.todo.ui.screen.addTask.schedule.TaskSchedule
+import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskSheet(
-    show: MutableState<Boolean>,
-    onAddTask: (String, TaskSchedule) -> Unit
-) {
-    if (!show.value) return
-    ModalBottomSheet(onDismissRequest = { show.value = false }) {
-        AddTaskSheetContent(
-            onAddTask = { text, schedule -> onAddTask(text, schedule); show.value = false }
-        )
-    }
+fun AddTaskScreen(viewModel: AddTaskViewModel = getViewModel()) {
+    val navController = LocalNavigator.current
+    AddTaskSheetContent(
+        handler = viewModel,
+        onBack = { navController.popBackStack() }
+    )
 }
 
 @Composable
 private fun AddTaskSheetContent(
-    onAddTask: (String, TaskSchedule) -> Unit,
+    handler: AddTaskHandler,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) = Column(
     modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp)
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+        .padding(8.dp)
 ) {
     var newTaskText by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    val taskSchedule = remember { mutableStateOf(TaskSchedule()) }
+    val taskSchedule = remember { mutableStateOf(handler.initialSchedule) }
+    val addButtonEnabled by remember { derivedStateOf { newTaskText.isNotBlank() } }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    IconButton(onClick = onBack) {
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_back),
+            tint = MaterialTheme.colorScheme.onBackground,
+            contentDescription = null
+        )
+    }
 
     OutlinedTextField(
         modifier = Modifier
@@ -65,7 +76,10 @@ private fun AddTaskSheetContent(
         value = newTaskText,
         label = { Text(text = "What do you need to do?") },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onAddTask(newTaskText, taskSchedule.value) }),
+        keyboardActions = KeyboardActions(onDone = {
+            handler.addTask(newTaskText, taskSchedule.value)
+            onBack()
+        }),
         onValueChange = { newTaskText = it }
     )
 
@@ -79,8 +93,8 @@ private fun AddTaskSheetContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 24.dp, bottom = 36.dp),
-        enabled = newTaskText.isNotBlank(),
-        onClick = { onAddTask(newTaskText, taskSchedule.value) }
+        enabled = addButtonEnabled,
+        onClick = { handler.addTask(newTaskText, taskSchedule.value); onBack() }
     ) {
         Text(text = "Add")
     }
@@ -89,5 +103,8 @@ private fun AddTaskSheetContent(
 @Preview
 @Composable
 private fun AddTaskSheetPreview() {
-    AddTaskSheetContent(modifier = Modifier.background(Color.White), onAddTask = { _, _ -> })
+    AddTaskSheetContent(
+        modifier = Modifier.background(Color.White),
+        handler = AddTaskHandler, onBack = {}
+    )
 }

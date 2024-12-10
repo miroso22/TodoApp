@@ -13,4 +13,5 @@ object DateFormatter {
 
     fun stringToMillis(string: String) = formatter.parse(string)?.time
 
+    fun startDayMillis(millis: Long) = stringToMillis(millisToString(millis)) ?: 0L
 }

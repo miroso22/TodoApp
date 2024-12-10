@@ -87,4 +87,6 @@ dependencies {
     implementation("androidx.glance:glance-material3:1.0.0")
 
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 }

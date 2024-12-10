@@ -1,13 +1,16 @@
 package com.example.todo.ui.screen.addTask.schedule
 
+import androidx.compose.runtime.Stable
 import java.util.Calendar
 
+@Stable
 data class TaskSchedule(
     val isScheduled: Boolean = true,
     val scheduleOption: ScheduleTimeOption = ScheduleTimeOption.Today,
     val customDate: Long? = null
 )
 
+@Stable
 enum class ScheduleTimeOption(val text: String) {
     Today("Today"), Tomorrow("Tomorrow"), CustomDate("Select date")
 }

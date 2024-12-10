@@ -28,6 +28,7 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import com.example.todo.data.model.Task
 import com.example.todo.data.model.TaskState
@@ -43,7 +44,9 @@ fun TodoWidget(glanceId: GlanceId, viewModel: MainViewModel) {
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.incompleteTasks.onEach { TodoAppWidget().update(context, glanceId) }.launchIn(this)
+        viewModel.incompleteTasks.onEach {
+            TodoAppWidget().update(context, glanceId)
+        }.launchIn(this)
     }
 
     TodoWidgetContent(
@@ -58,7 +61,7 @@ fun TodoWidget(glanceId: GlanceId, viewModel: MainViewModel) {
 @GlanceComposable
 private fun TodoWidgetContent(
     tasks: List<Task>, onMarkTaskDone: (Task) -> Unit, onAddTask: Action
-) = Column(modifier = GlanceModifier.fillMaxSize()) {
+) = Column(modifier = GlanceModifier.fillMaxSize().padding(4.dp)) {
     Text(text = "Tasks")
     LazyColumn(activityOptions = bundleOf()) {
         items(tasks) { task -> TaskItem(task = task, onCheck = { onMarkTaskDone(task) }) }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.todo.data.db.AppDatabase
 import com.example.todo.data.repository.TaskRepository
+import com.example.todo.ui.screen.addTask.AddTaskViewModel
 import com.example.todo.ui.screen.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -29,6 +30,7 @@ val mainModule = module {
 
     singleOf(::TaskRepository)
     viewModelOf(::MainViewModel)
+    viewModelOf(::AddTaskViewModel)
 }
 
 fun initKoin(context: Context) = GlobalContext.getKoinApplicationOrNull() ?: startKoin {

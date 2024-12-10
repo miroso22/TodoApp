@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ fun TaskScheduleSection(
     var state by scheduleState
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
+    val isChecked by remember { derivedStateOf { state.isScheduled } }
 
     fun selectOption(option: ScheduleTimeOption) {
         state = state.copy(scheduleOption = option)
@@ -49,9 +52,13 @@ fun TaskScheduleSection(
     Column(modifier = modifier) {
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(modifier = Modifier.padding(end = 12.dp), text = "Schedule?")
+            Text(
+                modifier = Modifier.padding(end = 12.dp),
+                color = MaterialTheme.colorScheme.onBackground,
+                text = "Schedule?"
+            )
             Switch(
-                checked = state.isScheduled,
+                checked = isChecked,
                 onCheckedChange = { state = state.copy(isScheduled = it) }
             )
         }

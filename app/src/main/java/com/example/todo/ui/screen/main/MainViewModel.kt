@@ -16,7 +16,9 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.UUID
 
-class MainViewModel(private val taskRepository: TaskRepository) : ViewModel(), MainScreenHandler {
+class MainViewModel(
+    private val taskRepository: TaskRepository
+) : ViewModel(), MainScreenHandler {
 
     private val dayOffset = MutableStateFlow(0)
 
